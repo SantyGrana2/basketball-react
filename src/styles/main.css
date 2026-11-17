@@ -1,0 +1,170 @@
+
+/* Variables generales */
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #f5f6ff;
+  background-color: #0b1020;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button {
+  font: inherit;
+}
+
+/* Contenedor principal */
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.app__main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Encabezado */
+.header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.header__title {
+  margin: 0;
+  color: #facc15;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+}
+
+.header__subtitle {
+  color: #aab2cf;
+  font-size: 16px;
+}
+
+/* Marcador */
+.scoreboard {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 35px 24px;
+  background: linear-gradient(
+    135deg,
+    #202944,
+    #141b32
+  );
+  border: 1px solid #35405f;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px #00000035;
+}
+
+.scoreboard__team {
+  text-align: center;
+}
+
+.scoreboard__team h2 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 32px;
+}
+
+.scoreboard__team p {
+  margin: 0;
+  color: #aab2cf;
+  font-size: 14px;
+}
+
+.scoreboard__score {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #facc15;
+  font-size: clamp(26px, 5vw, 48px);
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 20px 12px;
+  }
+
+  .scoreboard {
+    gap: 8px;
+    padding: 24px 10px;
+  }
+
+  .scoreboard__team h2 {
+    font-size: 22px;
+  }
+
+  .scoreboard__team p {
+    font-size: 11px;
+  }
+}
+
+
+/* Tabla de jugadores */
+.player-table {
+  padding: 25px;
+  background-color: #171e33;
+  border: 1px solid #303b59;
+  border-radius: 18px;
+  overflow-x: auto;
+}
+
+.player-table h2 {
+  margin: 0 0 24px;
+  color: #facc15;
+  font-size: 24px;
+}
+
+.player-table__table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.player-table__table th {
+  padding: 15px 12px;
+  background-color: #252f4a;
+  color: #facc15;
+  text-align: left;
+  font-size: 14px;
+}
+
+.player-table__table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #303b59;
+  color: #e7eaf5;
+  font-size: 14px;
+}
+
+.player-table__table tbody tr:nth-child(even) {
+  background-color: #1d263e;
+}
+
+.player-table__table tbody tr:hover {
+  background-color: #303c5b;
+  transition: background-color 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .player-table {
+    padding: 16px;
+  }
+
+  .player-table h2 {
+    font-size: 20px;
+  }
+}
