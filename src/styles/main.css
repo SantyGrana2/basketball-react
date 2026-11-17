@@ -207,3 +207,145 @@ button {
   color: #aeb8d0;
   text-align: center;
 }
+
+
+/* ========================================
+   PANEL DE ESTADISTICAS
+======================================== */
+
+.stats-panel {
+  margin: 28px 0;
+  padding: 28px;
+  background-color: #171e33;
+  border: 1px solid #303b59;
+  border-radius: 18px;
+}
+
+.stats-panel h2 {
+  margin: 0 0 24px;
+  color: #facc15;
+  font-size: 24px;
+}
+
+/* Tarjetas de estadísticas */
+
+.stats-panel__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stats-panel__card {
+  min-width: 0;
+  padding: 22px;
+  background-color: #252f4a;
+  border: 1px solid #394563;
+  border-radius: 14px;
+  transition: transform 0.2s ease;
+}
+
+.stats-panel__card:hover {
+  transform: translateY(-4px);
+}
+
+.stats-panel__card h3 {
+  margin: 0 0 12px;
+  color: #b7c3d9;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stats-panel__card p {
+  margin: 0;
+  color: #facc15;
+  font-size: 27px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.stats-panel__card span {
+  display: block;
+  margin-top: 8px;
+  color: #dce3f2;
+  font-size: 13px;
+}
+
+/* Distribución por posiciones */
+
+.stats-panel__distribution {
+  padding: 22px;
+  background-color: #1d263e;
+  border-radius: 14px;
+}
+
+.stats-panel__distribution h3 {
+  margin: 0 0 22px;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.stats-panel__position {
+  margin-bottom: 16px;
+}
+
+.stats-panel__position:last-child {
+  margin-bottom: 0;
+}
+
+.stats-panel__position-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #e7eaf5;
+  font-size: 14px;
+}
+
+.stats-panel__bar {
+  height: 11px;
+  background-color: #344158;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.stats-panel__bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #eab308,
+    #facc15
+  );
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+/* Diseño adaptable */
+
+@media (max-width: 1000px) {
+  .stats-panel__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-panel {
+    padding: 16px;
+  }
+
+  .stats-panel h2 {
+    font-size: 20px;
+  }
+
+  .stats-panel__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-panel__card {
+    padding: 18px;
+  }
+
+  .stats-panel__distribution {
+    padding: 16px;
+  }
+}
