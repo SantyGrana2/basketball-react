@@ -7,10 +7,41 @@ import SearchBar from "./components/SearchBar";
 import PlayerTable from "./components/PlayerTable";
 import Pagination from "./components/Pagination";
 import StatsPanel from "./components/StatsPanel";
+import ThemeToggle from "./components/ThemeToggle";
 
 import { players } from "./data/players";
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("basketball-theme") === "light"
+        ? "light"
+        : "dark";
+    } catch {
+      return "dark";
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      theme
+    );
+
+    try {
+      localStorage.setItem("basketball-theme", theme);
+    } catch {
+      // La aplicación sigue funcionando si el
+      // almacenamiento no está disponible.
+    }
+  }, [theme]);
+
+  const handleThemeToggle = () => {
+    setTheme((previous) =>
+      previous === "dark" ? "light" : "dark"
+    );
+  };
+
   // Estados de búsqueda
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -127,6 +158,13 @@ function App() {
 
   return (
     <div className="app">
+      <div className="app__theme-controls">
+        <ThemeToggle
+          theme={theme}
+          onToggle={handleThemeToggle}
+        />
+      </div>
+
       <Header />
 
       <main className="app__main">
