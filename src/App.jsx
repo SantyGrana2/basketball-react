@@ -6,6 +6,7 @@ import Scoreboard from "./components/Scoreboard";
 import SearchBar from "./components/SearchBar";
 import PlayerTable from "./components/PlayerTable";
 import Pagination from "./components/Pagination";
+import StatsPanel from "./components/StatsPanel";
 
 import { players } from "./data/players";
 
@@ -136,6 +137,8 @@ function App() {
           onChange={handleSearchChange}
           onClear={handleClearSearch}
         />
+
+        <StatsPanel players={filteredPlayers} />
 
         <p className="app__results">
           Resultados encontrados: {filteredPlayers.length}
