@@ -112,3 +112,59 @@ button {
     font-size: 11px;
   }
 }
+
+
+/* Tabla de jugadores */
+.player-table {
+  padding: 25px;
+  background-color: #171e33;
+  border: 1px solid #303b59;
+  border-radius: 18px;
+  overflow-x: auto;
+}
+
+.player-table h2 {
+  margin: 0 0 24px;
+  color: #facc15;
+  font-size: 24px;
+}
+
+.player-table__table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.player-table__table th {
+  padding: 15px 12px;
+  background-color: #252f4a;
+  color: #facc15;
+  text-align: left;
+  font-size: 14px;
+}
+
+.player-table__table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #303b59;
+  color: #e7eaf5;
+  font-size: 14px;
+}
+
+.player-table__table tbody tr:nth-child(even) {
+  background-color: #1d263e;
+}
+
+.player-table__table tbody tr:hover {
+  background-color: #303c5b;
+  transition: background-color 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .player-table {
+    padding: 16px;
+  }
+
+  .player-table h2 {
+    font-size: 20px;
+  }
+}
