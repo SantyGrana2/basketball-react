@@ -1,48 +1,28 @@
 
 export const players = [
-  {
-    id: 1,
-    number: 23,
-    name: "LeBron James",
-    team: "Lakers",
-    position: "Alero",
-    age: 41,
-    goals: 28
-  },
-  {
-    id: 2,
-    number: 30,
-    name: "Stephen Curry",
-    team: "Warriors",
-    position: "Base",
-    age: 38,
-    goals: 32
-  },
-  {
-    id: 3,
-    number: 77,
-    name: "Luka Doncic",
-    team: "Lakers",
-    position: "Base",
-    age: 27,
-    goals: 30
-  },
-  {
-    id: 4,
-    number: 34,
-    name: "Giannis Antetokounmpo",
-    team: "Bucks",
-    position: "Ala-pívot",
-    age: 31,
-    goals: 29
-  },
-  {
-    id: 5,
-    number: 15,
-    name: "Nikola Jokic",
-    team: "Nuggets",
-    position: "Pívot",
-    age: 31,
-    goals: 26
-  }
+  { id: 1, number: 23, name: "LeBron James", team: "Lakers", position: "Alero", age: 41, goals: 28 },
+  { id: 2, number: 30, name: "Stephen Curry", team: "Warriors", position: "Base", age: 38, goals: 32 },
+  { id: 3, number: 34, name: "Giannis Antetokounmpo", team: "Bucks", position: "Ala-pívot", age: 31, goals: 30 },
+  { id: 4, number: 77, name: "Luka Doncic", team: "Lakers", position: "Base", age: 27, goals: 33 },
+  { id: 5, number: 35, name: "Kevin Durant", team: "Rockets", position: "Alero", age: 38, goals: 27 },
+  { id: 6, number: 15, name: "Nikola Jokic", team: "Nuggets", position: "Pívot", age: 31, goals: 26 },
+  { id: 7, number: 0, name: "Jayson Tatum", team: "Celtics", position: "Alero", age: 28, goals: 29 },
+  { id: 8, number: 1, name: "Devin Booker", team: "Suns", position: "Escolta", age: 30, goals: 27 },
+  { id: 9, number: 2, name: "Shai Gilgeous-Alexander", team: "Thunder", position: "Base", age: 28, goals: 31 },
+  { id: 10, number: 5, name: "Anthony Edwards", team: "Timberwolves", position: "Escolta", age: 25, goals: 29 },
+  { id: 11, number: 21, name: "Joel Embiid", team: "76ers", position: "Pívot", age: 32, goals: 30 },
+  { id: 12, number: 13, name: "James Harden", team: "Clippers", position: "Base", age: 37, goals: 23 },
+  { id: 13, number: 3, name: "Anthony Davis", team: "Mavericks", position: "Ala-pívot", age: 33, goals: 25 },
+  { id: 14, number: 1, name: "Zion Williamson", team: "Pelicans", position: "Ala-pívot", age: 26, goals: 24 },
+  { id: 15, number: 12, name: "Ja Morant", team: "Grizzlies", position: "Base", age: 27, goals: 26 },
+  { id: 16, number: 45, name: "Donovan Mitchell", team: "Cavaliers", position: "Escolta", age: 30, goals: 28 },
+  { id: 17, number: 11, name: "Kyrie Irving", team: "Mavericks", position: "Base", age: 34, goals: 25 },
+  { id: 18, number: 7, name: "Jaylen Brown", team: "Celtics", position: "Alero", age: 30, goals: 26 },
+  { id: 19, number: 10, name: "DeMar DeRozan", team: "Kings", position: "Alero", age: 37, goals: 22 },
+  { id: 20, number: 0, name: "Tyrese Haliburton", team: "Pacers", position: "Base", age: 26, goals: 21 },
+  { id: 21, number: 4, name: "Evan Mobley", team: "Cavaliers", position: "Ala-pívot", age: 25, goals: 19 },
+  { id: 22, number: 22, name: "Jimmy Butler", team: "Warriors", position: "Alero", age: 37, goals: 23 },
+  { id: 23, number: 24, name: "Lauri Markkanen", team: "Jazz", position: "Ala-pívot", age: 29, goals: 24 },
+  { id: 24, number: 3, name: "Bradley Beal", team: "Clippers", position: "Escolta", age: 33, goals: 20 },
+  { id: 25, number: 8, name: "Zach LaVine", team: "Kings", position: "Escolta", age: 31, goals: 24 }
 ];
