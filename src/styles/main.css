@@ -168,3 +168,42 @@ button {
     font-size: 20px;
   }
 }
+
+
+/* Ordenamiento de columnas */
+
+.player-table__sort {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.player-table__sort:hover {
+  color: #ffffff;
+}
+
+.player-table__sort:focus-visible {
+  outline: 2px solid #facc15;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.player-table__sort span {
+  font-size: 17px;
+}
+
+.player-table__empty {
+  padding: 20px;
+  color: #aeb8d0;
+  text-align: center;
+}

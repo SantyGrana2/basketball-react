@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Header from "./components/Header";
 import Scoreboard from "./components/Scoreboard";
@@ -10,15 +10,21 @@ import Pagination from "./components/Pagination";
 import { players } from "./data/players";
 
 function App() {
-  // Estado de la búsqueda
+  // Estados de búsqueda
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Estado de la paginación
+  // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  // Espera de 300 ms antes de buscar
+  // Estado de ordenamiento
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: null
+  });
+
+  // Debounce de búsqueda de 300 ms
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -28,34 +34,70 @@ function App() {
   }, [search]);
 
   // Filtrar jugadores por nombre
-  const filteredPlayers = players.filter((player) =>
-    player.name
-      .toLowerCase()
-      .includes(debouncedSearch.trim().toLowerCase())
-  );
+  const filteredPlayers = useMemo(() => {
+    return players.filter((player) =>
+      player.name
+        .toLowerCase()
+        .includes(debouncedSearch.trim().toLowerCase())
+    );
+  }, [debouncedSearch]);
 
-  // Calcular el número de páginas
+  // Ordenar jugadores
+  const sortedPlayers = useMemo(() => {
+    if (!sortConfig.key || !sortConfig.direction) {
+      return filteredPlayers;
+    }
+
+    return [...filteredPlayers].sort((a, b) => {
+      const valueA = a[sortConfig.key];
+      const valueB = b[sortConfig.key];
+
+      
+    const comparison =
+      typeof valueA === "number" &&
+      typeof valueB === "number"
+        ? valueA - valueB
+        : String(valueA).localeCompare(
+            String(valueB),
+            "es",
+            { sensitivity: "base" }
+          );
+
+      return sortConfig.direction === "asc"
+        ? comparison
+        : -comparison;
+    });
+  }, [filteredPlayers, sortConfig]);
+
+  // Calcular el total de páginas
   const totalPages = Math.ceil(
-    filteredPlayers.length / pageSize
+    sortedPlayers.length / pageSize
   );
 
-  // Evitar páginas fuera del rango válido
+  // Garantizar una página válida
   const safePage = Math.max(
     1,
     Math.min(currentPage, totalPages || 1)
   );
 
-  // Obtener solo los jugadores de la página actual
+  // Obtener jugadores de la página actual
   const startIndex = (safePage - 1) * pageSize;
 
-  const paginatedPlayers = filteredPlayers.slice(
+  const paginatedPlayers = sortedPlayers.slice(
     startIndex,
     startIndex + pageSize
   );
 
-  // Reiniciar a la primera página al buscar
+  // Cambiar búsqueda
   const handleSearchChange = (value) => {
     setSearch(value);
+    setCurrentPage(1);
+  };
+
+  // Limpiar búsqueda
+  const handleClearSearch = () => {
+    setSearch("");
+    setDebouncedSearch("");
     setCurrentPage(1);
   };
 
@@ -65,10 +107,20 @@ function App() {
     setCurrentPage(1);
   };
 
-  // Limpiar la búsqueda
-  const handleClearSearch = () => {
-    setSearch("");
-    setDebouncedSearch("");
+  // Ordenamiento de tres estados
+  const handleSort = (key) => {
+    setSortConfig((previous) => {
+      if (previous.key !== key) {
+        return { key, direction: "asc" };
+      }
+
+      if (previous.direction === "asc") {
+        return { key, direction: "desc" };
+      }
+
+      return { key: null, direction: null };
+    });
+
     setCurrentPage(1);
   };
 
@@ -89,7 +141,11 @@ function App() {
           Resultados encontrados: {filteredPlayers.length}
         </p>
 
-        <PlayerTable players={paginatedPlayers} />
+        <PlayerTable
+          players={paginatedPlayers}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        />
 
         <Pagination
           currentPage={safePage}
