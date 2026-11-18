@@ -1,22 +1,26 @@
 
 import PlayerRow from "./PlayerRow";
 
-const columns = [
-  { key: "number", label: "Número" },
-  { key: "name", label: "Nombre" },
-  { key: "team", label: "Equipo" },
-  { key: "position", label: "Posición" },
-  { key: "age", label: "Edad" },
-  { key: "goals", label: "Goles" }
-];
-
 function PlayerTable({
   players,
   sortConfig,
-  onSort
+  onSort,
+  favoriteIds = [],
+  onToggleFavorite = () => {}
 }) {
+  const columns = [
+    { key: "number", label: "Número" },
+    { key: "name", label: "Nombre" },
+    { key: "team", label: "Equipo" },
+    { key: "position", label: "Posición" },
+    { key: "age", label: "Edad" },
+    { key: "goals", label: "Goles" }
+  ];
+
   const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return "↕";
+    if (sortConfig?.key !== key) {
+      return "↕";
+    }
 
     if (sortConfig.direction === "asc") {
       return "↑";
@@ -29,55 +33,78 @@ function PlayerTable({
     return "↕";
   };
 
+  const getSortLabel = (key, label) => {
+    if (sortConfig?.key !== key) {
+      return `Ordenar ${label}`;
+    }
+
+    if (sortConfig.direction === "asc") {
+      return `${label}: orden ascendente`;
+    }
+
+    return `${label}: orden descendente`;
+  };
+
   return (
     <section className="player-table">
-      <h2>Listado de jugadores</h2>
+      <h2 className="player-table__title">
+        Listado de jugadores
+      </h2>
 
-      <table className="player-table__table">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                scope="col"
-                aria-sort={
-                  sortConfig.key === column.key
-                    ? sortConfig.direction === "asc"
-                      ? "ascending"
-                      : "descending"
-                    : "none"
-                }
-              >
-                <button
-                  type="button"
-                  className="player-table__sort"
-                  onClick={() => onSort(column.key)}
+      <div className="player-table__wrapper">
+        <table className="player-table__table">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th key={column.key} scope="col">
+                  <button
+                    type="button"
+                    className="player-table__sort"
+                    onClick={() => onSort(column.key)}
+                    aria-label={getSortLabel(
+                      column.key,
+                      column.label
+                    )}
+                  >
+                    <span>{column.label}</span>
+
+                    <span
+                      className="player-table__sort-icon"
+                      aria-hidden="true"
+                    >
+                      {getSortIcon(column.key)}
+                    </span>
+                  </button>
+                </th>
+              ))}
+
+              <th scope="col">Favorito</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {players.length > 0 ? (
+              players.map((player) => (
+                <PlayerRow
+                  key={player.id}
+                  player={player}
+                  isFavorite={favoriteIds.includes(player.id)}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="player-table__empty"
                 >
-                  {column.label}
-                  <span aria-hidden="true">
-                    {getSortIcon(column.key)}
-                  </span>
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {players.map((player) => (
-            <PlayerRow
-              key={player.id}
-              player={player}
-            />
-          ))}
-        </tbody>
-      </table>
-
-      {players.length === 0 && (
-        <p className="player-table__empty">
-          No se encontraron jugadores.
-        </p>
-      )}
+                  No se encontraron jugadores.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
