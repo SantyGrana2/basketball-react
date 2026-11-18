@@ -8,10 +8,15 @@ import PlayerTable from "./components/PlayerTable";
 import Pagination from "./components/Pagination";
 import StatsPanel from "./components/StatsPanel";
 import ThemeToggle from "./components/ThemeToggle";
+import FavoritesFilter from "./components/FavoritesFilter";
 
 import { players } from "./data/players";
 
 function App() {
+  // ========================================
+  // TEMA CLARO Y OSCURO
+  // ========================================
+
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem("basketball-theme") === "light"
@@ -31,8 +36,7 @@ function App() {
     try {
       localStorage.setItem("basketball-theme", theme);
     } catch {
-      // La aplicación sigue funcionando si el
-      // almacenamiento no está disponible.
+      // Continuar si localStorage no está disponible
     }
   }, [theme]);
 
@@ -42,21 +46,13 @@ function App() {
     );
   };
 
-  // Estados de búsqueda
+  // ========================================
+  // BUSQUEDA DE JUGADORES
+  // ========================================
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Estados de paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
-
-  // Estado de ordenamiento
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: null
-  });
-
-  // Debounce de búsqueda de 300 ms
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -65,16 +61,99 @@ function App() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Filtrar jugadores por nombre
-  const filteredPlayers = useMemo(() => {
-    return players.filter((player) =>
-      player.name
-        .toLowerCase()
-        .includes(debouncedSearch.trim().toLowerCase())
-    );
-  }, [debouncedSearch]);
+  // ========================================
+  // PAGINACION
+  // ========================================
 
-  // Ordenar jugadores
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  // ========================================
+  // ORDENAMIENTO DE COLUMNAS
+  // ========================================
+
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: null
+  });
+
+  // ========================================
+  // FAVORITOS
+  // ========================================
+
+  const [favoriteIds, setFavoriteIds] = useState(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("basketball-favorites") || "[]"
+      );
+
+      return Array.isArray(saved)
+        ? saved.filter((id) =>
+            players.some((player) => player.id === id)
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [showOnlyFavorites, setShowOnlyFavorites] =
+    useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "basketball-favorites",
+        JSON.stringify(favoriteIds)
+      );
+    } catch {
+      // Continuar si localStorage no está disponible
+    }
+  }, [favoriteIds]);
+
+  const handleToggleFavorite = (playerId) => {
+    setFavoriteIds((previous) =>
+      previous.includes(playerId)
+        ? previous.filter((id) => id !== playerId)
+        : [...previous, playerId]
+    );
+  };
+
+  const handleToggleFavoritesFilter = () => {
+    setShowOnlyFavorites((previous) => !previous);
+    setCurrentPage(1);
+  };
+
+  // ========================================
+  // FILTRAR JUGADORES
+  // ========================================
+
+  const filteredPlayers = useMemo(() => {
+    const searchText = debouncedSearch
+      .trim()
+      .toLowerCase();
+
+    return players.filter((player) => {
+      const matchesSearch = player.name
+        .toLowerCase()
+        .includes(searchText);
+
+      const matchesFavorites =
+        !showOnlyFavorites ||
+        favoriteIds.includes(player.id);
+
+      return matchesSearch && matchesFavorites;
+    });
+  }, [
+    debouncedSearch,
+    showOnlyFavorites,
+    favoriteIds
+  ]);
+
+  // ========================================
+  // ORDENAR JUGADORES
+  // ========================================
+
   const sortedPlayers = useMemo(() => {
     if (!sortConfig.key || !sortConfig.direction) {
       return filteredPlayers;
@@ -84,16 +163,15 @@ function App() {
       const valueA = a[sortConfig.key];
       const valueB = b[sortConfig.key];
 
-      
-    const comparison =
-      typeof valueA === "number" &&
-      typeof valueB === "number"
-        ? valueA - valueB
-        : String(valueA).localeCompare(
-            String(valueB),
-            "es",
-            { sensitivity: "base" }
-          );
+      const comparison =
+        typeof valueA === "number" &&
+        typeof valueB === "number"
+          ? valueA - valueB
+          : String(valueA).localeCompare(
+              String(valueB),
+              "es",
+              { sensitivity: "base" }
+            );
 
       return sortConfig.direction === "asc"
         ? comparison
@@ -101,18 +179,19 @@ function App() {
     });
   }, [filteredPlayers, sortConfig]);
 
-  // Calcular el total de páginas
+  // ========================================
+  // CALCULAR PAGINACION
+  // ========================================
+
   const totalPages = Math.ceil(
     sortedPlayers.length / pageSize
   );
 
-  // Garantizar una página válida
   const safePage = Math.max(
     1,
     Math.min(currentPage, totalPages || 1)
   );
 
-  // Obtener jugadores de la página actual
   const startIndex = (safePage - 1) * pageSize;
 
   const paginatedPlayers = sortedPlayers.slice(
@@ -120,41 +199,62 @@ function App() {
     startIndex + pageSize
   );
 
-  // Cambiar búsqueda
+  // ========================================
+  // FUNCIONES DE BUSQUEDA
+  // ========================================
+
   const handleSearchChange = (value) => {
     setSearch(value);
     setCurrentPage(1);
   };
 
-  // Limpiar búsqueda
   const handleClearSearch = () => {
     setSearch("");
     setDebouncedSearch("");
     setCurrentPage(1);
   };
 
-  // Cambiar cantidad de jugadores por página
+  // ========================================
+  // FUNCIONES DE PAGINACION
+  // ========================================
+
   const handlePageSizeChange = (size) => {
     setPageSize(size);
     setCurrentPage(1);
   };
 
-  // Ordenamiento de tres estados
+  // ========================================
+  // FUNCIONES DE ORDENAMIENTO
+  // ========================================
+
   const handleSort = (key) => {
     setSortConfig((previous) => {
       if (previous.key !== key) {
-        return { key, direction: "asc" };
+        return {
+          key,
+          direction: "asc"
+        };
       }
 
       if (previous.direction === "asc") {
-        return { key, direction: "desc" };
+        return {
+          key,
+          direction: "desc"
+        };
       }
 
-      return { key: null, direction: null };
+      return {
+        key: null,
+        direction: null
+      };
     });
 
     setCurrentPage(1);
   };
+
+  // ========================================
+  // INTERFAZ PRINCIPAL
+  // ========================================
 
   return (
     <div className="app">
@@ -176,6 +276,12 @@ function App() {
           onClear={handleClearSearch}
         />
 
+        <FavoritesFilter
+          favoritesCount={favoriteIds.length}
+          showOnlyFavorites={showOnlyFavorites}
+          onToggleFilter={handleToggleFavoritesFilter}
+        />
+
         <StatsPanel players={filteredPlayers} />
 
         <p className="app__results">
@@ -186,6 +292,8 @@ function App() {
           players={paginatedPlayers}
           sortConfig={sortConfig}
           onSort={handleSort}
+          favoriteIds={favoriteIds}
+          onToggleFavorite={handleToggleFavorite}
         />
 
         <Pagination
