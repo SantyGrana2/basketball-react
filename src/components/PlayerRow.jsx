@@ -2,7 +2,8 @@
 function PlayerRow({
   player,
   isFavorite,
-  onToggleFavorite
+  onToggleFavorite,
+  onViewDetails
 }) {
   return (
     <tr className="player-table__row">
@@ -35,6 +36,17 @@ function PlayerRow({
           }
         >
           {isFavorite ? "★" : "☆"}
+        </button>
+      </td>
+
+      <td>
+        <button
+          type="button"
+          className="player-table__details-button"
+          onClick={() => onViewDetails(player)}
+          aria-label={`Ver detalles de ${player.name}`}
+        >
+          Ver detalles
         </button>
       </td>
     </tr>

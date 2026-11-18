@@ -6,7 +6,8 @@ function PlayerTable({
   sortConfig,
   onSort,
   favoriteIds = [],
-  onToggleFavorite = () => {}
+  onToggleFavorite,
+  onViewDetails
 }) {
   const columns = [
     { key: "number", label: "Número" },
@@ -79,6 +80,7 @@ function PlayerTable({
               ))}
 
               <th scope="col">Favorito</th>
+              <th scope="col">Detalles</th>
             </tr>
           </thead>
 
@@ -90,12 +92,13 @@ function PlayerTable({
                   player={player}
                   isFavorite={favoriteIds.includes(player.id)}
                   onToggleFavorite={onToggleFavorite}
+                  onViewDetails={onViewDetails}
                 />
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="player-table__empty"
                 >
                   No se encontraron jugadores.
