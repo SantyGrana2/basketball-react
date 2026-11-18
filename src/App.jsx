@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import Scoreboard from "./components/Scoreboard";
 import SearchBar from "./components/SearchBar";
+import SearchHistory from "./components/SearchHistory";
 import PlayerTable from "./components/PlayerTable";
 import Pagination from "./components/Pagination";
 import StatsPanel from "./components/StatsPanel";
@@ -12,9 +13,34 @@ import FavoritesFilter from "./components/FavoritesFilter";
 
 import { players } from "./data/players";
 
+// ========================================
+// FUNCION PARA ORGANIZAR EL HISTORIAL
+// ========================================
+
+function addSearchToHistory(previous, value) {
+  const term = value.trim();
+
+  if (!term) {
+    return previous;
+  }
+
+  const normalizedTerm = term.toLocaleLowerCase("es");
+
+  const withoutDuplicates = previous.filter(
+    (item) =>
+      item.toLocaleLowerCase("es") !== normalizedTerm
+  );
+
+  return [term, ...withoutDuplicates].slice(0, 5);
+}
+
+// ========================================
+// COMPONENTE PRINCIPAL
+// ========================================
+
 function App() {
   // ========================================
-  // TEMA CLARO Y OSCURO
+  // 1. TEMA CLARO Y OSCURO
   // ========================================
 
   const [theme, setTheme] = useState(() => {
@@ -36,7 +62,7 @@ function App() {
     try {
       localStorage.setItem("basketball-theme", theme);
     } catch {
-      // Continuar si localStorage no está disponible
+      // Continuar si localStorage no esta disponible
     }
   }, [theme]);
 
@@ -47,29 +73,101 @@ function App() {
   };
 
   // ========================================
-  // BUSQUEDA DE JUGADORES
+  // 2. BUSQUEDA DE JUGADORES
   // ========================================
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // ========================================
+  // 3. HISTORIAL DE BUSQUEDAS
+  // ========================================
+
+  const [searchHistory, setSearchHistory] = useState(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("basketball-search-history") ||
+          "[]"
+      );
+
+      if (!Array.isArray(saved)) {
+        return [];
+      }
+
+      return saved
+        .filter(
+          (term) =>
+            typeof term === "string" &&
+            term.trim() !== ""
+        )
+        .reduce(
+          (history, term) => {
+            const normalized = term
+              .trim()
+              .toLocaleLowerCase("es");
+
+            if (
+              history.some(
+                (item) =>
+                  item.toLocaleLowerCase("es") === normalized
+              )
+            ) {
+              return history;
+            }
+
+            if (history.length >= 5) {
+              return history;
+            }
+
+            return [...history, term.trim()];
+          },
+          []
+        );
+    } catch {
+      return [];
+    }
+  });
+
+  // Guardar historial en localStorage
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "basketball-search-history",
+        JSON.stringify(searchHistory)
+      );
+    } catch {
+      // Continuar si localStorage no esta disponible
+    }
+  }, [searchHistory]);
+
+  // Debounce de 300 ms y registro del historial
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
+
+      const term = search.trim();
+
+      if (term) {
+        setSearchHistory((previous) =>
+          addSearchToHistory(previous, term)
+        );
+      }
     }, 300);
 
     return () => clearTimeout(timer);
   }, [search]);
 
   // ========================================
-  // PAGINACION
+  // 4. PAGINACION
   // ========================================
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
   // ========================================
-  // ORDENAMIENTO DE COLUMNAS
+  // 5. ORDENAMIENTO
   // ========================================
 
   const [sortConfig, setSortConfig] = useState({
@@ -78,20 +176,23 @@ function App() {
   });
 
   // ========================================
-  // FAVORITOS
+  // 6. FAVORITOS
   // ========================================
 
   const [favoriteIds, setFavoriteIds] = useState(() => {
     try {
       const saved = JSON.parse(
-        localStorage.getItem("basketball-favorites") || "[]"
+        localStorage.getItem("basketball-favorites") ||
+          "[]"
       );
 
-      return Array.isArray(saved)
-        ? saved.filter((id) =>
-            players.some((player) => player.id === id)
-          )
-        : [];
+      if (!Array.isArray(saved)) {
+        return [];
+      }
+
+      return saved.filter((id) =>
+        players.some((player) => player.id === id)
+      );
     } catch {
       return [];
     }
@@ -100,6 +201,8 @@ function App() {
   const [showOnlyFavorites, setShowOnlyFavorites] =
     useState(false);
 
+  // Guardar favoritos
+
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -107,7 +210,7 @@ function App() {
         JSON.stringify(favoriteIds)
       );
     } catch {
-      // Continuar si localStorage no está disponible
+      // Continuar si localStorage no esta disponible
     }
   }, [favoriteIds]);
 
@@ -125,17 +228,50 @@ function App() {
   };
 
   // ========================================
-  // FILTRAR JUGADORES
+  // 7. FUNCIONES DEL HISTORIAL
+  // ========================================
+
+  const handleSelectHistory = (term) => {
+    setSearch(term);
+    setDebouncedSearch(term);
+    setCurrentPage(1);
+
+    setSearchHistory((previous) =>
+      addSearchToHistory(previous, term)
+    );
+  };
+
+  const handleClearHistory = () => {
+    setSearchHistory([]);
+  };
+
+  // ========================================
+  // 8. FUNCIONES DE BUSQUEDA
+  // ========================================
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    setCurrentPage(1);
+  };
+
+  // ========================================
+  // 9. FILTRAR JUGADORES
   // ========================================
 
   const filteredPlayers = useMemo(() => {
     const searchText = debouncedSearch
       .trim()
-      .toLowerCase();
+      .toLocaleLowerCase("es");
 
     return players.filter((player) => {
       const matchesSearch = player.name
-        .toLowerCase()
+        .toLocaleLowerCase("es")
         .includes(searchText);
 
       const matchesFavorites =
@@ -151,7 +287,7 @@ function App() {
   ]);
 
   // ========================================
-  // ORDENAR JUGADORES
+  // 10. ORDENAR JUGADORES
   // ========================================
 
   const sortedPlayers = useMemo(() => {
@@ -180,7 +316,7 @@ function App() {
   }, [filteredPlayers, sortConfig]);
 
   // ========================================
-  // CALCULAR PAGINACION
+  // 11. CALCULAR PAGINACION
   // ========================================
 
   const totalPages = Math.ceil(
@@ -199,32 +335,13 @@ function App() {
     startIndex + pageSize
   );
 
-  // ========================================
-  // FUNCIONES DE BUSQUEDA
-  // ========================================
-
-  const handleSearchChange = (value) => {
-    setSearch(value);
-    setCurrentPage(1);
-  };
-
-  const handleClearSearch = () => {
-    setSearch("");
-    setDebouncedSearch("");
-    setCurrentPage(1);
-  };
-
-  // ========================================
-  // FUNCIONES DE PAGINACION
-  // ========================================
-
   const handlePageSizeChange = (size) => {
-    setPageSize(size);
+    setPageSize(Number(size));
     setCurrentPage(1);
   };
 
   // ========================================
-  // FUNCIONES DE ORDENAMIENTO
+  // 12. ORDENAMIENTO DE COLUMNAS
   // ========================================
 
   const handleSort = (key) => {
@@ -253,7 +370,7 @@ function App() {
   };
 
   // ========================================
-  // INTERFAZ PRINCIPAL
+  // 13. INTERFAZ PRINCIPAL
   // ========================================
 
   return (
@@ -274,6 +391,12 @@ function App() {
           value={search}
           onChange={handleSearchChange}
           onClear={handleClearSearch}
+        />
+
+        <SearchHistory
+          history={searchHistory}
+          onSelectSearch={handleSelectHistory}
+          onClearHistory={handleClearHistory}
         />
 
         <FavoritesFilter
