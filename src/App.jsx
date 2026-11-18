@@ -1,5 +1,10 @@
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
 import Header from "./components/Header";
 import Scoreboard from "./components/Scoreboard";
@@ -10,6 +15,7 @@ import Pagination from "./components/Pagination";
 import StatsPanel from "./components/StatsPanel";
 import ThemeToggle from "./components/ThemeToggle";
 import FavoritesFilter from "./components/FavoritesFilter";
+import Modal from "./components/Modal";
 
 import { players } from "./data/players";
 
@@ -100,35 +106,30 @@ function App() {
             typeof term === "string" &&
             term.trim() !== ""
         )
-        .reduce(
-          (history, term) => {
-            const normalized = term
-              .trim()
-              .toLocaleLowerCase("es");
+        .reduce((history, term) => {
+          const normalized = term
+            .trim()
+            .toLocaleLowerCase("es");
 
-            if (
-              history.some(
-                (item) =>
-                  item.toLocaleLowerCase("es") === normalized
-              )
-            ) {
-              return history;
-            }
+          if (
+            history.some(
+              (item) =>
+                item.toLocaleLowerCase("es") === normalized
+            )
+          ) {
+            return history;
+          }
 
-            if (history.length >= 5) {
-              return history;
-            }
+          if (history.length >= 5) {
+            return history;
+          }
 
-            return [...history, term.trim()];
-          },
-          []
-        );
+          return [...history, term.trim()];
+        }, []);
     } catch {
       return [];
     }
   });
-
-  // Guardar historial en localStorage
 
   useEffect(() => {
     try {
@@ -140,8 +141,6 @@ function App() {
       // Continuar si localStorage no esta disponible
     }
   }, [searchHistory]);
-
-  // Debounce de 300 ms y registro del historial
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -200,8 +199,6 @@ function App() {
 
   const [showOnlyFavorites, setShowOnlyFavorites] =
     useState(false);
-
-  // Guardar favoritos
 
   useEffect(() => {
     try {
@@ -370,7 +367,22 @@ function App() {
   };
 
   // ========================================
-  // 13. INTERFAZ PRINCIPAL
+  // 13. MODAL DE DETALLES
+  // ========================================
+
+  const [selectedPlayer, setSelectedPlayer] =
+    useState(null);
+
+  const handleViewDetails = (player) => {
+    setSelectedPlayer(player);
+  };
+
+  const handleCloseModal = useCallback(() => {
+    setSelectedPlayer(null);
+  }, []);
+
+  // ========================================
+  // 14. INTERFAZ PRINCIPAL
   // ========================================
 
   return (
@@ -417,6 +429,7 @@ function App() {
           onSort={handleSort}
           favoriteIds={favoriteIds}
           onToggleFavorite={handleToggleFavorite}
+          onViewDetails={handleViewDetails}
         />
 
         <Pagination
@@ -427,6 +440,13 @@ function App() {
           onPageSizeChange={handlePageSizeChange}
         />
       </main>
+
+      {selectedPlayer && (
+        <Modal
+          player={selectedPlayer}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 }
