@@ -17,12 +17,14 @@ function PlayerRow({
       <td>
         <button
           type="button"
-          className={
+          className={`favorite-button ${
             isFavorite
-              ? "favorite-button favorite-button--active"
-              : "favorite-button"
+              ? "favorite-button--active"
+              : ""
+          }`}
+          onClick={() =>
+            onToggleFavorite(player.id)
           }
-          onClick={() => onToggleFavorite(player.id)}
           aria-label={
             isFavorite
               ? `Quitar a ${player.name} de favoritos`
@@ -35,7 +37,9 @@ function PlayerRow({
               : "Agregar a favoritos"
           }
         >
-          {isFavorite ? "★" : "☆"}
+          <span aria-hidden="true">
+            {isFavorite ? "★" : "☆"}
+          </span>
         </button>
       </td>
 

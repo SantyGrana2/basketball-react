@@ -11,6 +11,10 @@ function Pagination({
     (_, index) => index + 1
   );
 
+  const isFirstPage = currentPage === 1;
+  const isLastPage =
+    totalPages === 0 || currentPage >= totalPages;
+
   return (
     <nav
       className="pagination"
@@ -18,11 +22,12 @@ function Pagination({
     >
       <div className="pagination__size">
         <label htmlFor="page-size">
-          Jugadores por página:
+          Jugadores por página
         </label>
 
         <select
           id="page-size"
+          className="pagination__select"
           value={pageSize}
           onChange={(event) =>
             onPageSizeChange(Number(event.target.value))
@@ -37,7 +42,8 @@ function Pagination({
       <div className="pagination__buttons">
         <button
           type="button"
-          disabled={currentPage === 1}
+          className="pagination__button"
+          disabled={isFirstPage}
           onClick={() => onPageChange(1)}
         >
           Primera
@@ -45,24 +51,26 @@ function Pagination({
 
         <button
           type="button"
-          disabled={currentPage === 1}
+          className="pagination__button"
+          disabled={isFirstPage}
           onClick={() => onPageChange(currentPage - 1)}
         >
-          Anterior
+          ‹ Anterior
         </button>
 
         {pages.map((page) => (
           <button
             type="button"
             key={page}
-            className={
+            className={`pagination__button ${
               currentPage === page
                 ? "pagination__button--active"
                 : ""
-            }
+            }`}
             aria-current={
               currentPage === page ? "page" : undefined
             }
+            aria-label={`Ir a la página ${page}`}
             onClick={() => onPageChange(page)}
           >
             {page}
@@ -71,21 +79,17 @@ function Pagination({
 
         <button
           type="button"
-          disabled={
-            totalPages === 0 ||
-            currentPage === totalPages
-          }
+          className="pagination__button"
+          disabled={isLastPage}
           onClick={() => onPageChange(currentPage + 1)}
         >
-          Siguiente
+          Siguiente ›
         </button>
 
         <button
           type="button"
-          disabled={
-            totalPages === 0 ||
-            currentPage === totalPages
-          }
+          className="pagination__button"
+          disabled={isLastPage}
           onClick={() => onPageChange(totalPages)}
         >
           Última
